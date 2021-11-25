@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_5.4.xsd">
+
+
+  <form name="invoice-line-form" title="Invoice line"
+    model="com.axelor.apps.account.db.InvoiceLine" width="large" extension="true"
+    id="gst-invoice-line-form">
+
+    <extend target="//field[@name='inTaxTotal']">
+      <insert position="after">
+        <panel if-module="axelor-gst" if="__config__.app.isApp('gst')">
+          <field name="gstRate" readonly="true" title="GST Rate"/>
+          <field name="igst" readonly="true" title="IGST"/>
+          <field name="cgst" readonly="true" title="CGST"/>
+          <field name="sgst" readonly="true" title="SGST"/>
+        </panel>
+      </insert>
+    </extend>
+    <extend
+      target="//panel-tabs[@name='mainPanelTab']//panel[@name='informationsPanel']//field[@name='qty']">
+      <attribute name="onChange"
+        value="test.method,action-group-account-invoice-line-qty-onchange"/>
+    </extend>
+  </form>
+
+  <action-method name="test.method">
+    <call class="com.axelor.apps.gst.web.GstInvoiceLineController" method="qtyOnChange"/>
+  </action-method>
+
+</object-views>

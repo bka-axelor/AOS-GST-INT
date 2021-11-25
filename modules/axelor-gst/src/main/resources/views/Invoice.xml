@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_5.4.xsd">
+
+  <form name="invoice-form" title="Invoice" model="com.axelor.apps.account.db.Invoice"
+    extension="true" id="gat-invoice-form">
+    <extend target="//field[@name='priceList']">
+      <insert position="after">
+        <panel colSpan="3" if-module="axelor-gst" if="__config__.app.isApp('gst')">
+          <field name="netCgst" readonly="true" title="Net CGST"/>
+          <field name="netSgst" readonly="true" title="Net SGST"/>
+          <field name="netIgst" readonly="true" title="Net IGST"/>
+        </panel>
+      </insert>
+    </extend>
+    <extend target="//panel[@name='invoicingInfoPanel']//field[@name='partner']">
+      <attribute name="onChange"
+        value="action-group-account-invoice-partner-onchange,
+			action-method-invoice-address-str,action-method-partner-onChange"/>
+    </extend>
+  </form>
+
+  <action-method name="action-method-partner-onChange">
+    <call class="com.axelor.apps.gst.web.GstInvoiceController" method="updateInvoiceLine"/>
+  </action-method>
+
+</object-views>
