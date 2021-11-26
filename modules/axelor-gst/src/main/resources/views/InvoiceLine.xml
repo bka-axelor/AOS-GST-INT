@@ -21,11 +21,11 @@
     <extend
       target="//panel-tabs[@name='mainPanelTab']//panel[@name='informationsPanel']//field[@name='qty']">
       <attribute name="onChange"
-        value="test.method,action-group-account-invoice-line-qty-onchange"/>
+        value="action-group-account-invoice-line-qty-onchange,action-method-invoiceline-qty-onchange"/>
     </extend>
   </form>
 
-  <action-method name="test.method">
+  <action-method name="action-method-invoiceline-qty-onchange">
     <call class="com.axelor.apps.gst.web.GstInvoiceLineController" method="qtyOnChange"/>
   </action-method>
 

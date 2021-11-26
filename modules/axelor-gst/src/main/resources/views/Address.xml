@@ -14,6 +14,19 @@
     </extend>
 
   </form>
-
+  
+  <form name="address-partner-address-form" title="Address" extension="true"
+    model="com.axelor.apps.base.db.Address" id ="gst-address-partner-address-form"
+    onSave="action-group-base-address-onsave,save,action-base-address-method-create-partner-address,action-base-address-method-update-lat-long"
+    onNew="default-address-record" width="large">
+    
+    <extend target="//field[@name='city']">
+      <insert position="after">
+        <field name="state" canNew="true" if-module="axelor-gst"
+          if="__config__.app.isApp('gst')"/>
+      </insert>
+    </extend>
+    
+</form>
 
 </object-views>

@@ -4,7 +4,6 @@ import com.axelor.apps.account.db.Invoice;
 import java.math.BigDecimal;
 
 public interface GstInvoiceServie {
-  public BigDecimal calculateNetCandSgst(Invoice invoice);
-
-  public BigDecimal calculateIgst(Invoice invoice);
+  public BigDecimal calculateAllNetGst(Invoice invoice, Boolean isState);
+  public Boolean compareState(Invoice invoice);
 }
