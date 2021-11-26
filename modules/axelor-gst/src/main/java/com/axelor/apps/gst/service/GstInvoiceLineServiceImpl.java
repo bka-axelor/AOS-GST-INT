@@ -122,7 +122,7 @@ public class GstInvoiceLineServiceImpl extends InvoiceLineProjectServiceImpl
               .fetchOne();
       System.err.println(taxLine);
 
-      return super.getTaxLine(invoice, invoiceLine, isPurchase);
+      return taxLine;
     } else {
       return super.getTaxLine(invoice, invoiceLine, isPurchase);
     }
