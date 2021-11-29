@@ -14,27 +14,28 @@ import com.axelor.exception.AxelorException;
 import com.axelor.inject.Beans;
 import com.google.inject.Inject;
 
-public class GstSetTaxLine extends AccountManagementServiceAccountImpl{
-	
-	@Inject
-	TaxLineRepository taxLineRepo;
-	
-	@Inject
-	public GstSetTaxLine(FiscalPositionService fiscalPositionService, TaxService taxService) {
-		super(fiscalPositionService, taxService);
-		// TODO Auto-generated constructor stub
-	}
-	
-	@Override
-	public Tax getProductTax(Product product, Company company, FiscalPosition fiscalPosition, boolean isPurchase)
-			throws AxelorException {
-		if(Beans.get(AppSupplychainService.class).isApp("gst")) {
-			 TaxLine taxLine= taxLineRepo.all().filter("self.tax.code= ? and self.value= ?", "G_ST", product.getGstRate()).fetchOne();
-			return taxLine.getTax();
-		}else {
-			return super.getProductTax(product, company, fiscalPosition, isPurchase);
-		}
-		
-	}
+public class GstSetTaxLine extends AccountManagementServiceAccountImpl {
 
+  @Inject TaxLineRepository taxLineRepo;
+
+  @Inject
+  public GstSetTaxLine(FiscalPositionService fiscalPositionService, TaxService taxService) {
+    super(fiscalPositionService, taxService);
+  }
+
+  @Override
+  public Tax getProductTax(
+      Product product, Company company, FiscalPosition fiscalPosition, boolean isPurchase)
+      throws AxelorException {
+    if (Beans.get(AppSupplychainService.class).isApp("gst")) {
+      TaxLine taxLine =
+          taxLineRepo
+              .all()
+              .filter("self.tax.code= ? and self.value= ?", "G_ST", product.getGstRate())
+              .fetchOne();
+      return taxLine.getTax();
+    } else {
+      return super.getProductTax(product, company, fiscalPosition, isPurchase);
+    }
+  }
 }

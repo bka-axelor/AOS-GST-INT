@@ -16,36 +16,40 @@ import java.util.List;
 
 public class GstInvoiceController {
 
-	@Transactional
-	public void updateInvoiceLine(ActionRequest request, ActionResponse response) throws AxelorException {
-		Invoice invoice = request.getContext().asType(Invoice.class);
-		if (Beans.get(AppSupplychainService.class).isApp("gst") && invoice.getPartner() != null
-				&& invoice.getCompany().getAddress().getState() != null && invoice.getAddress().getState() != null
-				&& invoice.getInvoiceLineList() != null) {
+  @Transactional
+  public void updateInvoiceLine(ActionRequest request, ActionResponse response)
+      throws AxelorException {
+    Invoice invoice = request.getContext().asType(Invoice.class);
+    if (Beans.get(AppSupplychainService.class).isApp("gst")
+        && invoice.getPartner() != null
+        && invoice.getCompany().getAddress().getState() != null
+        && invoice.getAddress().getState() != null
+        && invoice.getInvoiceLineList() != null) {
 
-			Boolean isState = Beans.get(GstInvoiceServie.class).compareState(invoice);
-			List<InvoiceLine> invoiceLineList = invoice.getInvoiceLineList();
-			for (InvoiceLine invoiceLine : invoiceLineList) {
-				BigDecimal gstValue = Beans.get(GstInvoiceLineServiceImpl.class).callculateAllGgst(invoiceLine,invoice);
-				if (isState) {
-					invoiceLine.setSgst(gstValue);
-					invoiceLine.setCgst(gstValue);
-					invoiceLine.setIgst(BigDecimal.ZERO);
-				} else {
-					invoiceLine.setIgst(gstValue);
-					invoiceLine.setCgst(BigDecimal.ZERO);
-					invoiceLine.setSgst(BigDecimal.ZERO);
-				}
-			}
-			response.setValue("invoiceLineList", invoiceLineList);
-			Invoice compute = Beans.get(GstInvoiceServiceImpl.class).compute(invoice);
-			response.setValue("netCgst", compute.getNetCgst());
-			response.setValue("netSgst", compute.getNetCgst());
-			response.setValue("netIgst", compute.getNetIgst());
-		} else {
-			response.setValue("netCgst", BigDecimal.ZERO);
-			response.setValue("netSgst", BigDecimal.ZERO);
-			response.setValue("netIgst", BigDecimal.ZERO);
-		}
-	}
+      Boolean isState = Beans.get(GstInvoiceServie.class).compareState(invoice);
+      List<InvoiceLine> invoiceLineList = invoice.getInvoiceLineList();
+      for (InvoiceLine invoiceLine : invoiceLineList) {
+        BigDecimal gstValue =
+            Beans.get(GstInvoiceLineServiceImpl.class).callculateAllGgst(invoiceLine, invoice);
+        if (isState) {
+          invoiceLine.setSgst(gstValue);
+          invoiceLine.setCgst(gstValue);
+          invoiceLine.setIgst(BigDecimal.ZERO);
+        } else {
+          invoiceLine.setIgst(gstValue);
+          invoiceLine.setCgst(BigDecimal.ZERO);
+          invoiceLine.setSgst(BigDecimal.ZERO);
+        }
+      }
+      response.setValue("invoiceLineList", invoiceLineList);
+      Invoice compute = Beans.get(GstInvoiceServiceImpl.class).compute(invoice);
+      response.setValue("netCgst", compute.getNetCgst());
+      response.setValue("netSgst", compute.getNetCgst());
+      response.setValue("netIgst", compute.getNetIgst());
+    } else {
+      response.setValue("netCgst", BigDecimal.ZERO);
+      response.setValue("netSgst", BigDecimal.ZERO);
+      response.setValue("netIgst", BigDecimal.ZERO);
+    }
+  }
 }

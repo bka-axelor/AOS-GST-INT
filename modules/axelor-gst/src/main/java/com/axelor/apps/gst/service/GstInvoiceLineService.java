@@ -7,6 +7,6 @@ import java.math.BigDecimal;
 public interface GstInvoiceLineService {
 
   public BigDecimal getGstRate(InvoiceLine invoiceLine);
-  
+
   public BigDecimal callculateAllGgst(InvoiceLine invoiceLine, Invoice invoice);
 }
