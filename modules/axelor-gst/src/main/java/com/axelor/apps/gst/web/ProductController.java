@@ -11,8 +11,12 @@ public class ProductController {
 
   public void setGstRate(ActionRequest request, ActionResponse response) {
     Product product = request.getContext().asType(Product.class);
-    BigDecimal getGstRate = Beans.get(ProductGstServiceImpl.class).setGstRate(product);
-    BigDecimal setGstRate = getGstRate.divide(BigDecimal.valueOf(100));
-    response.setValue("gstRate", setGstRate);
+    if(product.getProductCategory() != null) {
+    	BigDecimal setGstRate = Beans.get(ProductGstServiceImpl.class).setGstRate(product).divide(BigDecimal.valueOf(100));
+    	response.setValue("gstRate", setGstRate);
+    }else {
+    	response.setValue("gstRate", BigDecimal.ZERO);
+    }
+    
   }
 }

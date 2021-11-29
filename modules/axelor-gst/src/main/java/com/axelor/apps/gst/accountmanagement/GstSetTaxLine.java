@@ -34,7 +34,7 @@ public class GstSetTaxLine extends AccountManagementServiceAccountImpl {
       TaxLine taxLine =
           taxLineRepo
               .all()
-              .filter("self.tax.code= ? and self.value= ?", "G_ST", product.getGstRate())
+              .filter("self.tax.name= ? and self.value= ?", "GST", product.getGstRate())
               .fetchOne();
       return taxLine.getTax();
     } 
