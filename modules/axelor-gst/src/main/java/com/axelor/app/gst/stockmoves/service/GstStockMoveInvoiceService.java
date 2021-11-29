@@ -66,10 +66,9 @@ public class GstStockMoveInvoiceService extends ProjectStockMoveInvoiceServiceIm
 				}
 			}
 			invoice.setInvoiceLineList(invoiceLineList);		
-			return invoice;
-		}else {
-			return super.createInvoice(stockMove, operationSelect, stockMoveLineListContext);
+			
 		}
+		return invoice;
 		
 		}
 	

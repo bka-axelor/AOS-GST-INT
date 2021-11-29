@@ -27,6 +27,8 @@ public class GstSetTaxLine extends AccountManagementServiceAccountImpl {
   public Tax getProductTax(
       Product product, Company company, FiscalPosition fiscalPosition, boolean isPurchase)
       throws AxelorException {
+	  Tax tax = super.getProductTax(product, company, fiscalPosition, isPurchase);
+	  
     if (Beans.get(AppSupplychainService.class).isApp("gst")) {
       TaxLine taxLine =
           taxLineRepo
@@ -34,8 +36,7 @@ public class GstSetTaxLine extends AccountManagementServiceAccountImpl {
               .filter("self.tax.code= ? and self.value= ?", "G_ST", product.getGstRate())
               .fetchOne();
       return taxLine.getTax();
-    } else {
-      return super.getProductTax(product, company, fiscalPosition, isPurchase);
-    }
+    } 
+    return tax;
   }
 }

@@ -42,10 +42,9 @@ public class GstPurcherOrderInvoiceServiceImpl extends PurchaseOrderInvoiceProje
 				}
 			}
 			invoice.setInvoiceLineList(invoiceLineList);		
-			return invoice;
-		}else {
-			return super.generateInvoice(purchaseOrder);
+			
 		}
+		return invoice;
 	}
 
 }
