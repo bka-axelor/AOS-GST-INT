@@ -13,6 +13,7 @@ import com.axelor.apps.base.service.CurrencyService;
 import com.axelor.apps.base.service.PriceListService;
 import com.axelor.apps.base.service.ProductCompanyService;
 import com.axelor.apps.base.service.app.AppBaseService;
+import com.axelor.apps.base.service.app.AppService;
 import com.axelor.apps.businessproject.service.InvoiceLineProjectServiceImpl;
 import com.axelor.apps.purchase.service.PurchaseProductService;
 import com.axelor.apps.supplychain.service.app.AppSupplychainService;
@@ -65,7 +66,7 @@ public class GstInvoiceLineServiceImpl extends InvoiceLineProjectServiceImpl imp
 	@Override
 	public Map<String, Object> fillProductInformation(Invoice invoice, InvoiceLine invoiceLine) throws AxelorException {
 		Map<String, Object> productinfo = super.fillProductInformation(invoice, invoiceLine);
-		if (Beans.get(AppSupplychainService.class).isApp("gst") && invoice.getPartner() != null) {
+		if (Beans.get(AppService.class).isApp("gst") && invoice.getPartner() != null) {
 			BigDecimal gstRate = getGstRate(invoiceLine);
 			productinfo.put("gstRate", gstRate);
 			Boolean isState = gstInvoiceSer.compareState(invoice);

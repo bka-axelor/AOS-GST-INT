@@ -8,6 +8,7 @@ import com.axelor.apps.account.db.Invoice;
 import com.axelor.apps.account.db.InvoiceLine;
 import com.axelor.apps.account.db.repo.InvoiceLineRepository;
 import com.axelor.apps.account.db.repo.InvoiceRepository;
+import com.axelor.apps.base.service.app.AppService;
 import com.axelor.apps.businessproject.service.ProjectStockMoveInvoiceServiceImpl;
 import com.axelor.apps.gst.service.GstInvoiceLineService;
 import com.axelor.apps.gst.service.GstInvoiceServie;
@@ -49,7 +50,7 @@ public class GstStockMoveInvoiceService extends ProjectStockMoveInvoiceServiceIm
 	public Invoice createInvoice(StockMove stockMove, Integer operationSelect,
 			List<Map<String, Object>> stockMoveLineListContext) throws AxelorException {
 		Invoice invoice = super.createInvoice(stockMove, operationSelect, stockMoveLineListContext);
-		if(Beans.get(AppSupplychainService.class).isApp("gst") && invoice.getCompany().getAddress().getState() !=null && invoice.getAddress().getState() !=null) {
+		if(Beans.get(AppService.class).isApp("gst") && invoice.getCompany().getAddress().getState() !=null && invoice.getAddress().getState() !=null) {
 			Boolean isState= gstInvoiceService.compareState(invoice);
 			List<InvoiceLine>invoiceLineList= invoice.getInvoiceLineList();	
 			for(InvoiceLine invoiceLine: invoiceLineList) {

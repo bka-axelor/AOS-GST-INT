@@ -2,6 +2,7 @@ package com.axelor.app.gst.purchesorder.service;
 
 import com.axelor.apps.account.db.Invoice;
 import com.axelor.apps.account.db.InvoiceLine;
+import com.axelor.apps.base.service.app.AppService;
 import com.axelor.apps.businessproject.service.PurchaseOrderInvoiceProjectServiceImpl;
 import com.axelor.apps.gst.service.GstInvoiceLineService;
 import com.axelor.apps.gst.service.GstInvoiceServie;
@@ -25,7 +26,7 @@ public class GstPurcherOrderInvoiceServiceImpl extends PurchaseOrderInvoiceProje
 	@Transactional(rollbackOn = { Exception.class })
 	public Invoice generateInvoice(PurchaseOrder purchaseOrder) throws AxelorException {
 		Invoice invoice = super.generateInvoice(purchaseOrder);
-		if(Beans.get(AppSupplychainService.class).isApp("gst") && invoice.getCompany().getAddress().getState() !=null && invoice.getAddress().getState() !=null) {
+		if(Beans.get(AppService.class).isApp("gst") && invoice.getCompany().getAddress().getState() !=null && invoice.getAddress().getState() !=null) {
 			Boolean isState= gstInvoiceService.compareState(invoice);
 			List<InvoiceLine>invoiceLineList= invoice.getInvoiceLineList();	
 			for(InvoiceLine invoiceLine: invoiceLineList) {

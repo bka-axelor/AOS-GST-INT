@@ -7,6 +7,7 @@ import com.axelor.apps.account.db.repo.TaxLineRepository;
 import com.axelor.apps.account.service.AccountManagementServiceAccountImpl;
 import com.axelor.apps.base.db.Company;
 import com.axelor.apps.base.db.Product;
+import com.axelor.apps.base.service.app.AppService;
 import com.axelor.apps.base.service.tax.FiscalPositionService;
 import com.axelor.apps.base.service.tax.TaxService;
 import com.axelor.apps.supplychain.service.app.AppSupplychainService;
@@ -29,7 +30,7 @@ public class GstSetTaxLine extends AccountManagementServiceAccountImpl {
       throws AxelorException {
 	  Tax tax = super.getProductTax(product, company, fiscalPosition, isPurchase);
 	  
-    if (Beans.get(AppSupplychainService.class).isApp("gst")) {
+    if (Beans.get(AppService.class).isApp("gst")) {
       TaxLine taxLine =
           taxLineRepo
               .all()
