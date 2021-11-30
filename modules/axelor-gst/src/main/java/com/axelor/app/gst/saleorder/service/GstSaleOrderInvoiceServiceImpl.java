@@ -3,6 +3,7 @@ package com.axelor.app.gst.saleorder.service;
 import com.axelor.apps.account.db.Invoice;
 import com.axelor.apps.account.db.InvoiceLine;
 import com.axelor.apps.account.db.repo.InvoiceRepository;
+import com.axelor.apps.account.service.invoice.InvoiceLineService;
 import com.axelor.apps.account.service.invoice.InvoiceService;
 import com.axelor.apps.base.service.app.AppBaseService;
 import com.axelor.apps.base.service.app.AppService;
@@ -25,11 +26,10 @@ import java.util.List;
 import java.util.Map;
 
 public class GstSaleOrderInvoiceServiceImpl extends SaleOrderInvoiceProjectServiceImpl {
-
 	@Inject
-	GstInvoiceServie gstInvoiceService;
+	InvoiceLineService invoiceLineService;
 	@Inject
-	GstInvoiceLineService gstInvoiceLineService;
+	InvoiceService invoiceService;
 
 	@Inject
 	public GstSaleOrderInvoiceServiceImpl(AppBaseService appBaseService, AppSupplychainService appSupplychainService,
@@ -46,24 +46,20 @@ public class GstSaleOrderInvoiceServiceImpl extends SaleOrderInvoiceProjectServi
 		
 		Invoice invoice = super.createInvoice(saleOrder, saleOrderLineList, qtyToInvoiceMap);
 		if(Beans.get(AppService.class).isApp("gst") && invoice.getCompany().getAddress().getState() !=null && invoice.getAddress().getState() !=null) {
-			Boolean isState = gstInvoiceService.compareState(invoice);
 			List<InvoiceLine> invoiceLineList = invoice.getInvoiceLineList();
 			for (InvoiceLine invoiceLine : invoiceLineList) {
+				Map<String, Object> fillProductInfo=invoiceLineService.fillProductInformation(invoice, invoiceLine);
 				invoiceLine.setGstRate(invoiceLine.getProduct().getGstRate());
-				if (isState) {
-					invoiceLine.setSgst(gstInvoiceLineService.callculateAllGgst(invoiceLine, invoice));
-					invoiceLine.setCgst(gstInvoiceLineService.callculateAllGgst(invoiceLine, invoice));
-					invoice.setNetCgst(gstInvoiceService.calculateAllNetGst(invoice, isState));
-					invoice.setNetSgst(gstInvoiceService.calculateAllNetGst(invoice, isState));
-					invoiceLine.setIgst(BigDecimal.ZERO);
-				} else {
-					invoiceLine.setIgst(gstInvoiceLineService.callculateAllGgst(invoiceLine, invoice));
-					invoice.setNetIgst(gstInvoiceService.calculateAllNetGst(invoice, isState));
-					invoiceLine.setSgst(BigDecimal.ZERO);
-					invoiceLine.setCgst(BigDecimal.ZERO);
-				}
+				invoiceLine.setCgst((BigDecimal) fillProductInfo.get("cgst"));
+				invoiceLine.setSgst((BigDecimal) fillProductInfo.get("sgst"));
+				invoiceLine.setIgst((BigDecimal) fillProductInfo.get("igst"));
 			}
 			invoice.setInvoiceLineList(invoiceLineList);
+			 Invoice compute = invoiceService.compute(invoice);
+			 invoice.setNetCgst(compute.getNetCgst());
+			 invoice.setNetSgst(compute.getNetSgst());
+			 invoice.setNetIgst(compute.getNetIgst());
+			
 		}		
 		return invoice;
 		

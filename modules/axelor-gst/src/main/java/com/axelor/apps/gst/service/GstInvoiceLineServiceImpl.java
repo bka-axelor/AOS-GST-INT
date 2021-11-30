@@ -73,7 +73,7 @@ public class GstInvoiceLineServiceImpl extends InvoiceLineProjectServiceImpl imp
 			BigDecimal gstValue = callculateAllGgst(invoiceLine, invoice);
 			if (isState) {
 				productinfo.put("cgst", gstValue);
-				productinfo.put("sgst", gstValue);
+				productinfo.put("sgst", gstValue);		
 			} else {
 				productinfo.put("igst", gstValue);
 			}
