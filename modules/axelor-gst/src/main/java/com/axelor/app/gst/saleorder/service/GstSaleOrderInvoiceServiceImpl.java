@@ -26,47 +26,62 @@ import java.util.Map;
 
 public class GstSaleOrderInvoiceServiceImpl extends SaleOrderInvoiceProjectServiceImpl {
 
-	@Inject
-	GstInvoiceServie gstInvoiceService;
-	@Inject
-	GstInvoiceLineService gstInvoiceLineService;
+  @Inject GstInvoiceServie gstInvoiceService;
+  @Inject GstInvoiceLineService gstInvoiceLineService;
 
-	@Inject
-	public GstSaleOrderInvoiceServiceImpl(AppBaseService appBaseService, AppSupplychainService appSupplychainService,
-			SaleOrderRepository saleOrderRepo, InvoiceRepository invoiceRepo, InvoiceService invoiceService,
-			AppBusinessProjectService appBusinessProjectService, StockMoveRepository stockMoveRepository,
-			SaleOrderLineService saleOrderLineService, SaleOrderWorkflowServiceImpl saleOrderWorkflowServiceImpl) {
-		super(appBaseService, appSupplychainService, saleOrderRepo, invoiceRepo, invoiceService,
-				appBusinessProjectService, stockMoveRepository, saleOrderLineService, saleOrderWorkflowServiceImpl);
-	}
+  @Inject
+  public GstSaleOrderInvoiceServiceImpl(
+      AppBaseService appBaseService,
+      AppSupplychainService appSupplychainService,
+      SaleOrderRepository saleOrderRepo,
+      InvoiceRepository invoiceRepo,
+      InvoiceService invoiceService,
+      AppBusinessProjectService appBusinessProjectService,
+      StockMoveRepository stockMoveRepository,
+      SaleOrderLineService saleOrderLineService,
+      SaleOrderWorkflowServiceImpl saleOrderWorkflowServiceImpl) {
+    super(
+        appBaseService,
+        appSupplychainService,
+        saleOrderRepo,
+        invoiceRepo,
+        invoiceService,
+        appBusinessProjectService,
+        stockMoveRepository,
+        saleOrderLineService,
+        saleOrderWorkflowServiceImpl);
+  }
 
-	@Override
-	public Invoice createInvoice(SaleOrder saleOrder, List<SaleOrderLine> saleOrderLineList,
-			Map<Long, BigDecimal> qtyToInvoiceMap) throws AxelorException {
-		
-		Invoice invoice = super.createInvoice(saleOrder, saleOrderLineList, qtyToInvoiceMap);
-		if(Beans.get(AppService.class).isApp("gst") && invoice.getCompany().getAddress().getState() !=null && invoice.getAddress().getState() !=null) {
-			Boolean isState = gstInvoiceService.compareState(invoice);
-			List<InvoiceLine> invoiceLineList = invoice.getInvoiceLineList();
-			for (InvoiceLine invoiceLine : invoiceLineList) {
-				invoiceLine.setGstRate(invoiceLine.getProduct().getGstRate());
-				if (isState) {
-					invoiceLine.setSgst(gstInvoiceLineService.callculateAllGgst(invoiceLine, invoice));
-					invoiceLine.setCgst(gstInvoiceLineService.callculateAllGgst(invoiceLine, invoice));
-					invoice.setNetCgst(gstInvoiceService.calculateAllNetGst(invoice, isState));
-					invoice.setNetSgst(gstInvoiceService.calculateAllNetGst(invoice, isState));
-					invoiceLine.setIgst(BigDecimal.ZERO);
-				} else {
-					invoiceLine.setIgst(gstInvoiceLineService.callculateAllGgst(invoiceLine, invoice));
-					invoice.setNetIgst(gstInvoiceService.calculateAllNetGst(invoice, isState));
-					invoiceLine.setSgst(BigDecimal.ZERO);
-					invoiceLine.setCgst(BigDecimal.ZERO);
-				}
-			}
-			invoice.setInvoiceLineList(invoiceLineList);
-		}		
-		return invoice;
-		
-		
-	}
+  @Override
+  public Invoice createInvoice(
+      SaleOrder saleOrder,
+      List<SaleOrderLine> saleOrderLineList,
+      Map<Long, BigDecimal> qtyToInvoiceMap)
+      throws AxelorException {
+
+    Invoice invoice = super.createInvoice(saleOrder, saleOrderLineList, qtyToInvoiceMap);
+    if (Beans.get(AppService.class).isApp("gst")
+        && invoice.getCompany().getAddress().getState() != null
+        && invoice.getAddress().getState() != null) {
+      Boolean isState = gstInvoiceService.compareState(invoice);
+      List<InvoiceLine> invoiceLineList = invoice.getInvoiceLineList();
+      for (InvoiceLine invoiceLine : invoiceLineList) {
+        invoiceLine.setGstRate(invoiceLine.getProduct().getGstRate());
+        if (isState) {
+          invoiceLine.setSgst(gstInvoiceLineService.callculateAllGgst(invoiceLine, invoice));
+          invoiceLine.setCgst(gstInvoiceLineService.callculateAllGgst(invoiceLine, invoice));
+          invoice.setNetCgst(gstInvoiceService.calculateAllNetGst(invoice, isState));
+          invoice.setNetSgst(gstInvoiceService.calculateAllNetGst(invoice, isState));
+          invoiceLine.setIgst(BigDecimal.ZERO);
+        } else {
+          invoiceLine.setIgst(gstInvoiceLineService.callculateAllGgst(invoiceLine, invoice));
+          invoice.setNetIgst(gstInvoiceService.calculateAllNetGst(invoice, isState));
+          invoiceLine.setSgst(BigDecimal.ZERO);
+          invoiceLine.setCgst(BigDecimal.ZERO);
+        }
+      }
+      invoice.setInvoiceLineList(invoiceLineList);
+    }
+    return invoice;
+  }
 }

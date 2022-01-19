@@ -1,9 +1,5 @@
 package com.axelor.app.gst.stockmoves.service;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-
 import com.axelor.apps.account.db.Invoice;
 import com.axelor.apps.account.db.InvoiceLine;
 import com.axelor.apps.account.db.repo.InvoiceLineRepository;
@@ -25,52 +21,68 @@ import com.axelor.exception.AxelorException;
 import com.axelor.inject.Beans;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
-public class GstStockMoveInvoiceService extends ProjectStockMoveInvoiceServiceImpl{
-	
-	@Inject
-	GstInvoiceServie gstInvoiceService;
-	@Inject
-	GstInvoiceLineService gstInvoiceLineService;
-	
-	@Inject
-	public GstStockMoveInvoiceService(SaleOrderInvoiceService saleOrderInvoiceService,
-			PurchaseOrderInvoiceService purchaseOrderInvoiceService,
-			StockMoveLineServiceSupplychain stockMoveLineServiceSupplychain, InvoiceRepository invoiceRepository,
-			SaleOrderRepository saleOrderRepo, PurchaseOrderRepository purchaseOrderRepo,
-			StockMoveLineRepository stockMoveLineRepository, InvoiceLineRepository invoiceLineRepository,
-			SupplyChainConfigService supplyChainConfigService, AppSupplychainService appSupplychainService) {
-		super(saleOrderInvoiceService, purchaseOrderInvoiceService, stockMoveLineServiceSupplychain, invoiceRepository,
-				saleOrderRepo, purchaseOrderRepo, stockMoveLineRepository, invoiceLineRepository, supplyChainConfigService,
-				appSupplychainService);
-	}
-	
-	@Override
-	@Transactional(rollbackOn = { Exception.class })
-	public Invoice createInvoice(StockMove stockMove, Integer operationSelect,
-			List<Map<String, Object>> stockMoveLineListContext) throws AxelorException {
-		Invoice invoice = super.createInvoice(stockMove, operationSelect, stockMoveLineListContext);
-		if(Beans.get(AppService.class).isApp("gst") && invoice.getCompany().getAddress().getState() !=null && invoice.getAddress().getState() !=null) {
-			Boolean isState= gstInvoiceService.compareState(invoice);
-			List<InvoiceLine>invoiceLineList= invoice.getInvoiceLineList();	
-			for(InvoiceLine invoiceLine: invoiceLineList) {
-				invoiceLine.setGstRate(invoiceLine.getProduct().getGstRate());
-				BigDecimal gstValue = gstInvoiceLineService.callculateAllGgst(invoiceLine, invoice);
-				if (isState) {
-					invoiceLine.setCgst(gstValue);
-					invoiceLine.setSgst(gstValue);
-					invoice.setNetCgst(gstInvoiceService.calculateAllNetGst(invoice, isState));
-					invoice.setNetSgst(gstInvoiceService.calculateAllNetGst(invoice, isState));
-				}else {
-					invoiceLine.setIgst(gstValue);
-					invoice.setNetIgst(gstInvoiceService.calculateAllNetGst(invoice, isState));
-				}
-			}
-			invoice.setInvoiceLineList(invoiceLineList);		
-		}
-		return invoice;
-		
-		}
-	
-	
+public class GstStockMoveInvoiceService extends ProjectStockMoveInvoiceServiceImpl {
+
+  @Inject GstInvoiceServie gstInvoiceService;
+  @Inject GstInvoiceLineService gstInvoiceLineService;
+
+  @Inject
+  public GstStockMoveInvoiceService(
+      SaleOrderInvoiceService saleOrderInvoiceService,
+      PurchaseOrderInvoiceService purchaseOrderInvoiceService,
+      StockMoveLineServiceSupplychain stockMoveLineServiceSupplychain,
+      InvoiceRepository invoiceRepository,
+      SaleOrderRepository saleOrderRepo,
+      PurchaseOrderRepository purchaseOrderRepo,
+      StockMoveLineRepository stockMoveLineRepository,
+      InvoiceLineRepository invoiceLineRepository,
+      SupplyChainConfigService supplyChainConfigService,
+      AppSupplychainService appSupplychainService) {
+    super(
+        saleOrderInvoiceService,
+        purchaseOrderInvoiceService,
+        stockMoveLineServiceSupplychain,
+        invoiceRepository,
+        saleOrderRepo,
+        purchaseOrderRepo,
+        stockMoveLineRepository,
+        invoiceLineRepository,
+        supplyChainConfigService,
+        appSupplychainService);
+  }
+
+  @Override
+  @Transactional(rollbackOn = {Exception.class})
+  public Invoice createInvoice(
+      StockMove stockMove,
+      Integer operationSelect,
+      List<Map<String, Object>> stockMoveLineListContext)
+      throws AxelorException {
+    Invoice invoice = super.createInvoice(stockMove, operationSelect, stockMoveLineListContext);
+    if (Beans.get(AppService.class).isApp("gst")
+        && invoice.getCompany().getAddress().getState() != null
+        && invoice.getAddress().getState() != null) {
+      Boolean isState = gstInvoiceService.compareState(invoice);
+      List<InvoiceLine> invoiceLineList = invoice.getInvoiceLineList();
+      for (InvoiceLine invoiceLine : invoiceLineList) {
+        invoiceLine.setGstRate(invoiceLine.getProduct().getGstRate());
+        BigDecimal gstValue = gstInvoiceLineService.callculateAllGgst(invoiceLine, invoice);
+        if (isState) {
+          invoiceLine.setCgst(gstValue);
+          invoiceLine.setSgst(gstValue);
+          invoice.setNetCgst(gstInvoiceService.calculateAllNetGst(invoice, isState));
+          invoice.setNetSgst(gstInvoiceService.calculateAllNetGst(invoice, isState));
+        } else {
+          invoiceLine.setIgst(gstValue);
+          invoice.setNetIgst(gstInvoiceService.calculateAllNetGst(invoice, isState));
+        }
+      }
+      invoice.setInvoiceLineList(invoiceLineList);
+    }
+    return invoice;
+  }
 }

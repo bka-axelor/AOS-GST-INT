@@ -65,9 +65,10 @@ public class GstInvoiceLineServiceImpl extends InvoiceLineProjectServiceImpl imp
 	@Override
 	public Map<String, Object> fillProductInformation(Invoice invoice, InvoiceLine invoiceLine) throws AxelorException {
 		Map<String, Object> productinfo = super.fillProductInformation(invoice, invoiceLine);
-		if (Beans.get(AppSupplychainService.class).isApp("gst") && invoice.getPartner() != null) {
+		if (Beans.get(AppSupplychainService.class).isApp("gst") && invoice.getPartner() != null 
+				&& invoice.getCompany().getAddress().getState() != null) {
 			BigDecimal gstRate = getGstRate(invoiceLine);
-			productinfo.put("gstRate", gstRate);
+			productinfo.put("gstRate", gstRate);			
 			Boolean isState = gstInvoiceSer.compareState(invoice);
 			BigDecimal gstValue = callculateAllGgst(invoiceLine, invoice);
 			if (isState) {
@@ -76,7 +77,7 @@ public class GstInvoiceLineServiceImpl extends InvoiceLineProjectServiceImpl imp
 			} else {
 				productinfo.put("igst", gstValue);
 			}
-		} 
+		}
 		return productinfo;
 	}
 }
