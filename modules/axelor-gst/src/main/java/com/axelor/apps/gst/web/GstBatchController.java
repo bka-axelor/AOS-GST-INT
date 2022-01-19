@@ -4,11 +4,12 @@ import com.axelor.apps.base.db.Batch;
 import com.axelor.apps.sale.db.SaleBatch;
 import com.axelor.apps.sale.db.repo.SaleBatchRepository;
 import com.axelor.apps.supplychain.service.batch.BatchInvoicing;
+import com.axelor.apps.supplychain.web.SaleBatchController;
 import com.axelor.inject.Beans;
 import com.axelor.rpc.ActionRequest;
 import com.axelor.rpc.ActionResponse;
 
-public class GstBatchController {
+public class GstBatchController extends SaleBatchController{
 	
 	public void actionBatceSale(ActionRequest request, ActionResponse response) {
 		SaleBatch saleBatch = request.getContext().asType(SaleBatch.class);
